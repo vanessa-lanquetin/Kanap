@@ -24,14 +24,14 @@ function getData() {
 					console.log(element)
 
 					const lien = createElem('a')
-					lien.setAttribute("href","./product.html?id=42")
+					lien.setAttribute("href",`./product.html?id=${element._id}`)
 					itemsSection.appendChild(lien)
 
 					const article = createElem('article')
 					lien.appendChild(article)
 
 
-					 const img = document.createElement('img')
+					 const img = createElem('img')
 					 const imgUrl= element.imageUrl
 					 img.setAttribute("src",imgUrl)
 					 article.appendChild(img)
