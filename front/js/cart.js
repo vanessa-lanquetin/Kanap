@@ -11,14 +11,15 @@ fetch(`http://localhost:3000/api/products/${id}`).then((res) =>
 
 //On récupères les produits de l'API
 function getProductFromAPI(id) {
-  return fetch(`http://localhost:3000/api/products/${id}`).then((res) =>res.json()) 
+  return fetch(`http://localhost:3000/api/products/${id}`).then((res) =>
+    res.json()
+  );
 }
-
 
 //Ici nous avons une fonction asynchrone qui permet d'afficher le contenu du panier
 async function updateDisplayCart() {
-  const elements = []
-  let totalPanierQuantity=0;
+  const elements = [];
+  let totalPanierQuantity = 0;
   let totalPanier = 0;
   for (let i = 0; i < cart.cart.length; i++) {
     const productInCart = cart.cart[i];
@@ -41,35 +42,33 @@ async function updateDisplayCart() {
   const totalQuantity = document.getElementById("totalQuantity");
   if (totalQuantity) {
     totalQuantity.innerText = totalPanierQuantity.toString();
-  } 
+  }
   const totalPrice = document.getElementById("totalPrice");
   if (totalPrice) {
     totalPrice.innerText = totalPanier.toString();
   }
   const cart__items = document.getElementById("cart__items");
-  if(cart__items) {
-    cart__items.innerText = ''
-    elements.forEach(element => {
-      cart__items.appendChild(element)
+  if (cart__items) {
+    cart__items.innerText = "";
+    elements.forEach((element) => {
+      cart__items.appendChild(element);
     });
   }
 }
-updateDisplayCart()
-
-
+updateDisplayCart();
 
 //On supprime l'item du panier
 function deleteFromCart(id, color) {
   //Du localstorage
-  cart.deleteItem(id, color)
+  cart.deleteItem(id, color);
   //On met a jour le panier
-  updateDisplayCart()
+  updateDisplayCart();
 }
 //Changer la quantité et mettre à jour dans le panier
 function changeQuantity(id, color, quantity) {
   console.log(id, color, +quantity);
-  cart.editProductQuantity(id, color, +quantity)
-  updateDisplayCart()
+  cart.editProductQuantity(id, color, +quantity);
+  updateDisplayCart();
 }
 
 // L'object produit est composé de :
@@ -91,25 +90,65 @@ function changeQuantity(id, color, quantity) {
 
 //Fonction qui permet de créer facilement un élément sur le dom
 function createProductElem(product, color, quantity) {
-  const article = createElement("article","cart__item",[['data-id', product._id],['data-color', color]],
-    createElement('div', 'cart__item__img', [], 
-      createElement('img', '', [['src', product.imageUrl], ['alt', product.altTxt]])
+  const article = createElement(
+    "article",
+    "cart__item",
+    [
+      ["data-id", product._id],
+      ["data-color", color],
+    ],
+    createElement(
+      "div",
+      "cart__item__img",
+      [],
+      createElement("img", "", [
+        ["src", product.imageUrl],
+        ["alt", product.altTxt],
+      ])
     ),
-    createElement('div', 'cart__item__content', [],
-      createElement('div', 'cart__item__content__description', [],
-        createElement('h2', '', [], product.name),
-        createElement('p', '', [], color),
-        createElement('p', '', [], product.price.toString()+ "€"),
+    createElement(
+      "div",
+      "cart__item__content",
+      [],
+      createElement(
+        "div",
+        "cart__item__content__description",
+        [],
+        createElement("h2", "", [], product.name),
+        createElement("p", "", [], color),
+        createElement("p", "", [], product.price.toString() + "€")
       ),
-      createElement('div', 'cart__item__content__settings', [],
-        createElement('div', 'cart__item__content__settings__quantity', [],
-          createElement('p', '', [], `Qté :`),
-          createElement('input', 'itemQuantity', 
-            [['type','number'], ['name', 'itemQuantity'], ["min",'1'], ["max", '100'], ["value", quantity.toString()], ['onchange', (ev) => changeQuantity(product._id, color, ev.target.value)]]
-          , ``)
+      createElement(
+        "div",
+        "cart__item__content__settings",
+        [],
+        createElement(
+          "div",
+          "cart__item__content__settings__quantity",
+          [],
+          createElement("p", "", [], `Qté :`),
+          createElement(
+            "input",
+            "itemQuantity",
+            [
+              ["type", "number"],
+              ["name", "itemQuantity"],
+              ["min", "1"],
+              ["max", "100"],
+              ["value", quantity.toString()],
+              [
+                "onchange",
+                (ev) => changeQuantity(product._id, color, ev.target.value),
+              ],
+            ],
+            ``
+          )
         ),
-        createElement('div', 'cart__item__content__settings__delete', [["onclick", () => deleteFromCart(product._id, color)]],
-          createElement('p', 'deleteItem', [], 'Supprimer'),
+        createElement(
+          "div",
+          "cart__item__content__settings__delete",
+          [["onclick", () => deleteFromCart(product._id, color)]],
+          createElement("p", "deleteItem", [], "Supprimer")
         )
       )
     )
@@ -118,10 +157,10 @@ function createProductElem(product, color, quantity) {
 }
 
 /**
- * 
- * @param {string} type 
- * @param {string} classNames 
- * @param {[string, any][]} attributes 
+ *
+ * @param {string} type
+ * @param {string} classNames
+ * @param {[string, any][]} attributes
  * @param {(string| HTMLElement)[]} contents Tous les parametres qui suivent sont regroupés dans ce tableau grace au ...
  */
 function createElement(type, classNames = "", attributes = [], ...contents) {
@@ -129,24 +168,117 @@ function createElement(type, classNames = "", attributes = [], ...contents) {
   if (classNames) {
     element.classList.add(classNames);
   }
-  attributes.forEach(attribute => {
-    const key = attribute[0]
-    const value = attribute[1]
-    if(typeof value === 'function') {
-      element[key] = value
+  attributes.forEach((attribute) => {
+    const key = attribute[0];
+    const value = attribute[1];
+    if (typeof value === "function") {
+      element[key] = value;
     } else {
-      element.setAttribute(key, value)
+      element.setAttribute(key, value);
     }
   });
 
-  contents.forEach(content => {
+  contents.forEach((content) => {
     if (typeof content === "string") {
       element.innerText = content;
     } else {
-      element.appendChild(content)
+      element.appendChild(content);
     }
-  })
-  return element
+  });
+  return element;
 }
 
+const testHasNotNumber = (value) => {
+  return /^[a-zA-Z]+$/.test(value)
+}
+const testIsFilled = (value) => {
+  return value ? true : false
+}
+const testIsEmail = (value) => {
+  return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    .test(value)
+}
+
+/**
+ * Je configure mes inputs pour tester les erreurs
+ */
+const inputs = [
+  {
+    error: true,
+    // Pour ca il me faut un selecteur pour recuperer l'input
+    selector: ".cart__order__form input[name='firstName']",
+    // Il faut que j'écoute sur un evenement. En l'occurrence a chaque fois que j'appuie sur une touche
+    event: "input",
+    // Je liste les erreurs a tester
+    errors: [
+      // chaque error doit avoir un test et un message d'erreur en cas d'echec de ce meme test
+      { test: testHasNotNumber, errorMsg: "Le prénom ne doit pas contenir de chiffres." },
+      // chaque error doit avoir un test et un message d'erreur en cas d'echec de ce meme test
+      { test: testIsFilled, errorMsg: "Le champs ne doit pas être vide" },
+    ],
+  }, { // Je fais la meme chose mais pour lastname
+    error: true,
+    selector: ".cart__order__form input[name='lastName']",
+    event: "input",
+    errors: [
+      { test: testHasNotNumber, errorMsg: "Le nom ne doit pas contenir de chiffres." },
+      { test: testIsFilled, errorMsg: "Le champs ne doit pas être vide" },
+
+    ],
+  },{// Je fais la meme chose mais pour email mais en testant que ca soit un email cette fois
+    error: true,
+    selector: ".cart__order__form input[name='email']",
+    event: "input",
+    errors: [
+      { test: testIsEmail, errorMsg: "L'email n'est pas valide" },
+      { test: testIsFilled, errorMsg: "Le champs ne doit pas être vide" },
+    ],
+  },
+];
+
+/** J'itere sur mes confs au dessus et j'implemente le code pour faire fonctionner les confs */
+inputs.forEach((input) => {
+  // J'écoute l'événement sur le selecteur configuré
+  document.querySelector(input.selector)?.addEventListener(input.event, (event)=> {
+    const target = /**@type {HTMLInputElement}*/ (event.target)
+    // Je récupere la valeur de l'input
+    const value = target.value;
+    // Je récupere l'emplacement du message d'erreur en remontant sur le parent puis en redescendant sur le paragraphe
+    const errorHtml = target?.parentElement?.querySelector("p");
+    // J'initialise l'erreur
+    let error = '';
+    // Pour chaque erreur
+    input.errors.forEach((confError) => {
+      // je teste si la valeur est valide suivant le test qui a été configuré
+      const isGood = confError?.test(value);
+      // si il n'est pas valide alors je renseigne l'erreur à afficher
+      if (!isGood) error = confError?.errorMsg;
+    });
+    // J'affiche l'erreur dans le html.
+    // Si il n'ya pas eu d'erreur lors du foreach au dessus la varriable error est toujours vide.
+    // Donc rien ne s'affiche
+    if(errorHtml) errorHtml.innerText = error;
+    if(error) input.error = true
+    else input.error = false
+  });
+})
+
+function validateForm() {   
+  const isFormValid = inputs.every((conf) => !conf.error)
+    if (isFormValid) {
+      window.location.href = "confirmation.html";
+    } else if (!isFormValid) return alert("Le formulaire n'est pas valide");
+}
+
+
+
+// Associe la fonction validateForm() à l'événement "click" du bouton avec l'id "order"
+let order;
+order = document.getElementById("order");
+if (order) {
+  order.addEventListener("click", function (event) {
+    event.preventDefault();
+    validateForm();
+  });
+}
 
