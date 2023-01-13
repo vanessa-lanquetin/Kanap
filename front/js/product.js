@@ -40,15 +40,20 @@ getData();
 const getColorProductElement = () => /**@type {HTMLInputElement}*/ (document.getElementById("colors"));
 const getColorProduct = () => getColorProductElement()?.value; // "?" si getColorProductElement renvoie null alors ne vas pas rechercher .value
 const getQuantityElement = () => /**@type {HTMLInputElement}*/ (document.getElementById("quantity"));
-const getQuantity = () => +getQuantityElement()?.value;//+ est un un raccourci pour transformer une valeur en nombre
+let getQuantity = () => +getQuantityElement()?.value;//+ est un un raccourci pour transformer une valeur en nombre
 const addCart = document.getElementById("addToCart");
 // @ts-ignore vs code pense que cart est chargé dans dans des fichiers séparés
 const cart = new Cart();
 
+ //Ici j'écoute l'évenement couleurs, pour que la quantité se remette à 0 quand je change de couleurs
+couleurs.addEventListener("change", function () {
+  getQuantityElement().value = "0";
+});
+
 if(addCart) {
   addCart.addEventListener("click", function () {
     const color = getColorProduct();
-    const quantity = getQuantity();
+    let quantity = getQuantity();
     cart.addProduct({id, color, quantity})
   });
 } else {

@@ -2,6 +2,12 @@
 //Elle concerne le fonctionnement du panier
 //On utlise le constructor qui est appelé au début qui permet récupérer le contenu du localstorage ou un tableau vide
 
+//Ici cette fonction sert à confirmer l'ajout de la commande dans le panier et à rediriger l'utilisateur vers la page panier
+function goToCart() {
+  if (confirm("Commande ajoutée, voir mon panier?")) {
+    window.location.href = "cart.html";
+  }
+}
 class Cart {
   constructor() {
     this.cart = this.loadFromLocalStorage();
@@ -17,11 +23,16 @@ class Cart {
     } else {
       const existingProductInCart = this.findProduct(product.id, product.color);
       if (existingProductInCart) {
-        const newQuantity = existingProductInCart.quantity + product.quantity;
+        let newQuantity = product.quantity;
+        console.log(newQuantity)
+        newQuantity = existingProductInCart.quantity + product.quantity;
         this.editProductQuantity(product.id, product.color, newQuantity);
+
+        goToCart();
       } else {
         this.cart.push(product);
         this.saveToLocalStorage();
+        goToCart();
       }
     }
   }
@@ -33,17 +44,17 @@ class Cart {
   }
   //Suppression du produit
   deleteItem(id, color) {
-    const product = this.findProduct(id, color)
-    if(product) {
-      const index = this.cart.indexOf(product)
-      if(index > -1) {
+    const product = this.findProduct(id, color);
+    if (product) {
+      const index = this.cart.indexOf(product);
+      if (index > -1) {
         //Permet de supprimer l'élément
-        this.cart.splice(index, 1)
+        this.cart.splice(index, 1);
       }
     } else {
-      console.error('product not found')
+      console.error("product not found");
     }
-    this.saveToLocalStorage()
+    this.saveToLocalStorage();
   }
   /**
    * Modifier la quantité d'un produit dans le panier et le sauvegarde
@@ -51,7 +62,7 @@ class Cart {
    * @param {string} color
    * @param {number} quantity
    */
-    editProductQuantity(id, color, quantity) {
+  editProductQuantity(id, color, quantity) {
     const cartError = this.getCartError(color, quantity);
     //Si il y a une erreur préviens le client
     if (cartError) {
@@ -59,7 +70,7 @@ class Cart {
     } else {
       //Sinon recherche le produit
       const product = this.findProduct(id, color);
-      if(product) {
+      if (product) {
         //On met à jour la quantité
         product.quantity = quantity;
       }
@@ -70,7 +81,8 @@ class Cart {
   //Fonction pour les erreurs (quantité,couleur)
   getCartError(color, quantity) {
     if (quantity < 1) return "Veuillez renseigner la quantité";
-    if (quantity > 100) return "Veuillez choisir une quantitié inférieure à 100";
+    if (quantity > 100)
+      return "Veuillez choisir une quantitié inférieure à 100";
     if (!color) return "Veuillez renseigner la couleur"; // "!" permet de vérifier l'inverse de la condition. la condition d'un string vide étant false, !false === true
   }
 
@@ -87,5 +99,3 @@ class Cart {
     return JSON.parse(localStorage.getItem("cart") || "[]");
   }
 }
-
-

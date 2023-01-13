@@ -2,7 +2,6 @@
 //On crée une instance
 const cart = new Cart();
 
-
 /* const productIds = cart.cart.map(product => product.id)
 fetch(`http://localhost:3000/api/products/${id}`).then((res) =>
     res.json().then((data) => {
@@ -22,6 +21,15 @@ async function updateDisplayCart() {
   const elements = [];
   let totalPanierQuantity = 0;
   let totalPanier = 0;
+  //Ici je dis que si le panier est vide, affiche " Votre panier est vide"
+  if (cart.cart.length==0) {
+    let cartItem = document.createElement("div");
+    let cartFill = document.createElement("p");
+    cartFill.innerText = "Votre panier est vide";
+    cartItem.appendChild(cartFill).style.fontSize = "20px";
+    let h1 = document.getElementsByTagName("h1");
+    h1[0].appendChild(cartItem);
+  }
   for (let i = 0; i < cart.cart.length; i++) {
     const productInCart = cart.cart[i];
     const productInAPI = await getProductFromAPI(productInCart.id);
@@ -216,7 +224,7 @@ const inputs = [
     event: "input",
     // Je liste les erreurs a tester
     field: "firstName",
-    value: /** @type {any | null} */ ('bernard'),
+    value: /** @type {any | null} */ ("Vanessa"),
     /* contact.firstName = document.querySelector(".cart__order__form input[name='firstName']").value; */
     errors: [
       // chaque error doit avoir un test et un message d'erreur en cas d'echec de ce meme test
@@ -234,7 +242,7 @@ const inputs = [
     selector: ".cart__order__form input[name='lastName']",
     event: "input",
     field: "lastName",
-    value: /** @type {any | null} */ ('delaquincaillerie'),
+    value: /** @type {any | null} */ ("Lanquetin"),
     errors: [
       {
         test: testHasNotNumber,
@@ -249,7 +257,7 @@ const inputs = [
     selector: ".cart__order__form input[name='address']",
     event: "input",
     field: "address",
-    value: /** @type {any | null} */ ('7 rue paul jack'),
+    value: /** @type {any | null} */ ("7 rue paul jack"),
     errors: [],
   },
   {
@@ -258,7 +266,7 @@ const inputs = [
     selector: ".cart__order__form input[name='city']",
     event: "input",
     field: "city",
-    value: /** @type {any | null} */ ('Paris'),
+    value: /** @type {any | null} */ ("Nancy"),
     errors: [],
   },
   {
@@ -267,7 +275,7 @@ const inputs = [
     selector: ".cart__order__form input[name='email']",
     event: "input",
     field: "email",
-    value: /** @type {any | null} */ ('test@test.test'),
+    value: /** @type {any | null} */ ("test@test.test"),
     errors: [
       { test: testIsEmail, errorMsg: "L'email n'est pas valide" },
       { test: testIsFilled, errorMsg: "Le champs ne doit pas être vide" },
@@ -276,9 +284,9 @@ const inputs = [
 ];
 
 /**
- * 
- * @param {*} input 
- * @param {HTMLInputElement} target 
+ *
+ * @param {*} input
+ * @param {HTMLInputElement} target
  */
 function validInput(input, target) {
   // Je récupere la valeur de l'input
@@ -305,7 +313,9 @@ function validInput(input, target) {
 }
 /** J'itere sur mes confs au dessus et j'implemente le code pour faire fonctionner les confs */
 inputs.forEach((input) => {
-  const inputHTML = /**@type {HTMLInputElement}*/ (document.querySelector(input.selector))
+  const inputHTML = /**@type {HTMLInputElement}*/ (
+    document.querySelector(input.selector)
+  );
   // Je charge les valeurs par défaut et je les vérifies
   inputHTML.value = input.value;
   validInput(input, inputHTML);
@@ -319,10 +329,10 @@ async function validateForm() {
   const isFormValid = inputs.every((conf) => !conf.error);
 
   if (isFormValid) {
-    const contact = {}
-    inputs.forEach(input => {
-      contact[input.field] = input.value
-    })
+    const contact = {};
+    inputs.forEach((input) => {
+      contact[input.field] = input.value;
+    });
     const result = await fetch("http://localhost:3000/api/products/order", {
       method: "POST",
       headers: {
@@ -330,12 +340,14 @@ async function validateForm() {
       },
       body: JSON.stringify({
         contact,
-        products: cart.cart.map(c => c.id),
+        products: cart.cart.map((c) => c.id),
       }),
     });
-    const order = await result.json()
-    const orderId = order.orderId
+    const order = await result.json();
+    const orderId = order.orderId;
     window.location.href = `confirmation.html?orderId=${orderId}`;
+    //Ici je supprime ce qu'il y a dans le localStorage, pour que le panier soit vide après la commande validée
+    localStorage.clear();
   } else if (!isFormValid) return alert("Le formulaire n'est pas valide");
 }
 
