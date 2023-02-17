@@ -11,5 +11,3 @@ const orderHTML = document.getElementById("orderId");
 if (orderId != null && orderHTML != null) {
   orderHTML.innerText = orderId;
 }
-
-//test
