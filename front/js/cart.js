@@ -1,43 +1,54 @@
-// @ts-ignore vs code pense que cart est chargé dans  des fichiers séparés
-//On crée une instance
+// @ts-ignore : cette ligne de code permet à l'éditeur de code de'y ignorer les erreurs de type qui pourraient survenir pour la variable "cart",
+// Car il pense que celle-ci est chargée dans des fichiers séparés.
+
+//Ici je crée une nouvelle instance de la classe Cart, qui est utilisée pour stocker les produits ajoutés au panier.
 const cart = new Cart();
 
-/* const productIds = cart.cart.map(product => product.id)
-fetch(`http://localhost:3000/api/products/${id}`).then((res) =>
-    res.json().then((data) => {
-      const element = data;
-    })
-) */
-
-//On récupères les produits de l'API
+//J'utilise fonction pour récupérer les informations d'un produit spécifique à partir de l'API en utilisant l'ID du produit.
 function getProductFromAPI(id) {
   return fetch(`http://localhost:3000/api/products/${id}`).then((res) =>
     res.json()
   );
 }
 
-//Ici nous avons une fonction asynchrone qui permet d'afficher le contenu du panier
+//Ici j'utilise une fonction asynchrone, qui permet d'afficher le contenu du panier
 async function updateDisplayCart() {
   const elements = [];
+  //J'initalise les variables
   let totalPanierQuantity = 0;
   let totalPanier = 0;
-  //Ici je dis que si le panier est vide, affiche " Votre panier est vide"
-  if (cart.cart.length==0) {
+
+  // Je Vérifie si le panier est vide
+  if (cart.cart.length == 0) {
+    // Je crée un élément de div pour le message de panier vide
     let cartItem = document.createElement("div");
+    // Je crée un élément de paragraphe pour le contenu du message
     let cartFill = document.createElement("p");
+    // J'ajoute le message "Votre panier est vide" à l'élément de paragraphe
     cartFill.innerText = "Votre panier est vide";
-    cartItem.appendChild(cartFill).style.fontSize = "20px";
+    // J'ajoute l'élément de paragraphe à l'élément de div
+    cartItem.appendChild(cartFill);
+    // Je modifie la taille de police de l'élément de paragraphe à 20px
+    cartItem.style.fontSize = "20px";
+    // J'obtient le premier élément h1 de la page
     let h1 = document.getElementsByTagName("h1");
+    // J'ajoute l'élément de div à l'élément h1
     h1[0].appendChild(cartItem);
   }
+
+  //Je fais une boucle pour chaque produit dans le panier
   for (let i = 0; i < cart.cart.length; i++) {
+    // Je récupère le produit actuel dans le panier
     const productInCart = cart.cart[i];
+    // J'obtient les détails du produit à partir de l'API
     const productInAPI = await getProductFromAPI(productInCart.id);
+    // Je crée un élément pour afficher les détails du produit
     const element = createProductElem(
       productInAPI,
       productInCart.color,
       productInCart.quantity
     );
+    // Ajoute l'élément au tableau d'éléments
     elements.push(element);
 
     //Ici je récupère le prix et la quantité pour obtenir un total article
@@ -48,38 +59,48 @@ async function updateDisplayCart() {
     totalPanier += totalArticle;
   }
   console.log(totalPanier, totalPanierQuantity);
+  // Je récupère l'élément HTML pour afficher le nombre total d'articles dans le panier
   const totalQuantity = document.getElementById("totalQuantity");
+  // Si l'élément existe, met à jour le contenu avec la quantité totale de produits dans le panier
   if (totalQuantity) {
     totalQuantity.innerText = totalPanierQuantity.toString();
   }
+  // Je récupère l'élément HTML pour afficher le prix total dans le panier
   const totalPrice = document.getElementById("totalPrice");
+  // Si l'élément existe, met à jour le contenu avec le prix total des produits dans le panier
   if (totalPrice) {
     totalPrice.innerText = totalPanier.toString();
   }
+  // Je récupère l'élément HTML pour afficher les articles dans le panier
   const cart__items = document.getElementById("cart__items");
+  // Si l'élément existe, met à jour le contenu en ajoutant les éléments pour chaque produit dans le panier
   if (cart__items) {
     cart__items.innerText = "";
+    //Pour chaque éléments
     elements.forEach((element) => {
+      //Ajout de l'élément dans le panier
       cart__items.appendChild(element);
     });
   }
 }
+// Appelle la fonction pour mettre à jour l'affichage initial du panier
 updateDisplayCart();
 
-//On supprime l'item du panier
+// Définit une fonction pour supprimer un article du panier
 function deleteFromCart(id, color) {
-  //Du localstorage
+  // Appelle la méthode pour supprimer un article du panier stocké dans le LocalStorage
   cart.deleteItem(id, color);
-  //On met a jour le panier
+  // Appelle la fonction pour mettre à jour l'affichage du panier
   updateDisplayCart();
 }
-//Changer la quantité et mettre à jour dans le panier
+// Définit une fonction pour changer la quantité d'un article dans le panier
 function changeQuantity(id, color, quantity) {
   console.log(id, color, +quantity);
+  // Appelle la méthode pour changer la quantité d'un article dans le panier stocké dans le LocalStorage
   cart.editProductQuantity(id, color, +quantity);
+  // Appelle la fonction pour mettre à jour l'affichage du panier
   updateDisplayCart();
 }
-
 // L'object produit est composé de :
 /**
  *
@@ -174,19 +195,24 @@ function createProductElem(product, color, quantity) {
  * @param {(string| HTMLElement)[]} contents Tous les parametres qui suivent sont regroupés dans ce tableau grace au ...
  */
 function createElement(type, classNames = "", attributes = [], ...contents) {
-  const element = document.createElement(type);
-  if (classNames) {
-    element.classList.add(classNames);
-  }
-  attributes.forEach((attribute) => {
-    const key = attribute[0];
-    const value = attribute[1];
-    if (typeof value === "function") {
-      element[key] = value;
-    } else {
-      element.setAttribute(key, value);
-    }
-  });
+// Je crée un nouvel élément en spécifiant le type
+const element = document.createElement(type);
+// Si des classNames sont fournies, ajoute ces classes à l'élément
+if (classNames) {
+element.classList.add(classNames);
+}
+// Pour chaque attribut fourni, ajoute l'attribut à l'élément
+attributes.forEach((attribute) => {
+const key = attribute[0];
+const value = attribute[1];
+// Si la valeur de l'attribut est une fonction, je l'ajoute en tant que propriété de l'élément
+if (typeof value === "function") { //alt avec sa valeur pour une image
+element[key] = value;
+} else {
+// Sinon, l'ajoute en tant qu'attribut de l'élément
+element.setAttribute(key, value);
+}
+});
 
   contents.forEach((content) => {
     if (typeof content === "string") {
@@ -224,7 +250,7 @@ const inputs = [
     event: "input",
     // Je liste les erreurs a tester
     field: "firstName",
-    value: /** @type {any | null} */ ("Vanessa"),
+    value: /** @type {any | null} */ (""),
     /* contact.firstName = document.querySelector(".cart__order__form input[name='firstName']").value; */
     errors: [
       // chaque error doit avoir un test et un message d'erreur en cas d'echec de ce meme test
@@ -242,7 +268,7 @@ const inputs = [
     selector: ".cart__order__form input[name='lastName']",
     event: "input",
     field: "lastName",
-    value: /** @type {any | null} */ ("Lanquetin"),
+    value: /** @type {any | null} */ (""),
     errors: [
       {
         test: testHasNotNumber,
@@ -257,8 +283,10 @@ const inputs = [
     selector: ".cart__order__form input[name='address']",
     event: "input",
     field: "address",
-    value: /** @type {any | null} */ ("7 rue paul jack"),
-    errors: [],
+    value: /** @type {any | null} */ (""),
+    errors: [
+      { test: testIsFilled, errorMsg: "Le champs ne doit pas être vide" },
+    ],
   },
   {
     // Je fais la meme chose mais pour lastname
@@ -266,8 +294,10 @@ const inputs = [
     selector: ".cart__order__form input[name='city']",
     event: "input",
     field: "city",
-    value: /** @type {any | null} */ ("Nancy"),
-    errors: [],
+    value: /** @type {any | null} */ (""),
+    errors: [
+      { test: testIsFilled, errorMsg: "Le champs ne doit pas être vide" },
+    ],
   },
   {
     // Je fais la meme chose mais pour email mais en testant que ca soit un email cette fois
@@ -275,7 +305,7 @@ const inputs = [
     selector: ".cart__order__form input[name='email']",
     event: "input",
     field: "email",
-    value: /** @type {any | null} */ ("test@test.test"),
+    value: /** @type {any | null} */ (""),
     errors: [
       { test: testIsEmail, errorMsg: "L'email n'est pas valide" },
       { test: testIsFilled, errorMsg: "Le champs ne doit pas être vide" },
@@ -327,28 +357,31 @@ inputs.forEach((input) => {
 
 async function validateForm() {
   const isFormValid = inputs.every((conf) => !conf.error);
-
-  if (isFormValid) {
-    const contact = {};
-    inputs.forEach((input) => {
-      contact[input.field] = input.value;
-    });
-    const result = await fetch("http://localhost:3000/api/products/order", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contact,
-        products: cart.cart.map((c) => c.id),
-      }),
-    });
-    const order = await result.json();
-    const orderId = order.orderId;
-    window.location.href = `confirmation.html?orderId=${orderId}`;
-    //Ici je supprime ce qu'il y a dans le localStorage, pour que le panier soit vide après la commande validée
-    localStorage.clear();
-  } else if (!isFormValid) return alert("Le formulaire n'est pas valide");
+  // Si mon panier n'est pas vide, l'envoi du formulaire et la redirection peut se faire
+  if (cart.cart.length !== 0){
+    if (isFormValid) {
+      const contact = {};
+      inputs.forEach((input) => {
+        contact[input.field] = input.value;
+      });
+      const result = await fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contact,
+          products: cart.cart.map((c) => c.id),
+        }),
+      });
+      const order = await result.json();
+      const orderId = order.orderId;
+      window.location.href = `confirmation.html?orderId=${orderId}`;
+      //Ici je supprime ce qu'il y a dans le localStorage, pour que le panier soit vide après la commande validée
+      localStorage.clear();
+    } else if (!isFormValid) return alert("Le formulaire n'est pas valide");
+    //Si mon panier est vide, une alerte s'affichera
+  } else if (cart.cart.length == 0) return alert ("Panier vide");    
 }
 
 // Associe la fonction validateForm() à l'événement "click" du bouton avec l'id "order"

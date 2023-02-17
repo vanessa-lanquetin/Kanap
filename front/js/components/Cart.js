@@ -94,7 +94,7 @@ class Cart {
    * On récupere le contenu du localstorage, si il est vide on créé un tableau vide
    * @returns {{id: string, color: string, quantity: number}[]}
    */
-  //On récupère les données du localstorage et les retransforme en objet si le local storage est vide se sera un tableau vide
+  //On récupère les données du localstorage et les retransforme en objet, si le local storage est vide se sera un tableau vide
   loadFromLocalStorage() {
     return JSON.parse(localStorage.getItem("cart") || "[]");
   }
