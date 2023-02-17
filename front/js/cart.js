@@ -1,23 +1,40 @@
-// @ts-ignore : cette ligne de code permet à l'éditeur de code de'y ignorer les erreurs de type qui pourraient survenir pour la variable "cart",
-// Car il pense que celle-ci est chargée dans des fichiers séparés.
+//PAGE PANIER
 
-//Ici je crée une nouvelle instance de la classe Cart, qui est utilisée pour stocker les produits ajoutés au panier.
+//PARTIE PANIER
+
+
+//JE CREE UNE NOUVELLE INSTANCE DE CART
+// @ts-ignore : cette ligne de code permet à l'éditeur de code d'y ignorer les erreurs de type qui pourraient survenir pour la variable "cart",
+// @ts-ignore vs code pense que cart est chargé dans des fichiers séparés
+//JE CREE UNE NOUVELLE INSTANCE DE CART LE FONCTIONNEMENT DU PANIER
 const cart = new Cart();
 
-//J'utilise fonction pour récupérer les informations d'un produit spécifique à partir de l'API en utilisant l'ID du produit.
+//ENSUITE JE RECUPERE LES INFORMATIONS D'UN PRODUIT SPECIFIQUE
+  /**
+   * J'utilise cette fonction pour récupérer les informations d'un produit spécifique à partir de l'API en utilisant l'ID du produit.
+  */
 function getProductFromAPI(id) {
   return fetch(`http://localhost:3000/api/products/${id}`).then((res) =>
     res.json()
   );
 }
 
-//Ici j'utilise une fonction asynchrone, qui permet d'afficher le contenu du panier
+//J'UTILISE UNE FOCNTION ASYNCHRONE POUR AFFICHER LE CONTENU DU PANIER
+  /**
+   * J'utilise une fonction asynchrone, qui permet d'afficher le contenu du panier
+  */
 async function updateDisplayCart() {
+  // Je crée un tableau vide
   const elements = [];
+
+
+  //JE CREE MES TOTAUX
   //J'initalise les variables
   let totalPanierQuantity = 0;
   let totalPanier = 0;
 
+
+  //J'AFFICHE UN MESSAGE LORSQUE LE PANIER EST VIDE
   // Je Vérifie si le panier est vide
   if (cart.cart.length == 0) {
     // Je crée un élément de div pour le message de panier vide
@@ -36,6 +53,7 @@ async function updateDisplayCart() {
     h1[0].appendChild(cartItem);
   }
 
+  //POUR CHAQUE ELEMENT DE MON TABLEAU, JE RECUPERE LES INFORMATIONS DU PRODUIT et L'AJOUTE
   //Je fais une boucle pour chaque produit dans le panier
   for (let i = 0; i < cart.cart.length; i++) {
     // Je récupère le produit actuel dans le panier
@@ -50,7 +68,9 @@ async function updateDisplayCart() {
     );
     // Ajoute l'élément au tableau d'éléments
     elements.push(element);
+    
 
+    //JE CALCULE MES TOTAUX EN RECUPERANT LES PRIX ET QUANTITES 
     //Ici je récupère le prix et la quantité pour obtenir un total article
     const totalArticle = productInAPI.price * productInCart.quantity;
     //Je mets à jour la quantité de mon panier
@@ -71,21 +91,32 @@ async function updateDisplayCart() {
   if (totalPrice) {
     totalPrice.innerText = totalPanier.toString();
   }
+
+
+  //JE RECUPERE L'ELEMENT HTML  QUI CONTIENDRA TOUT MON PANIER
   // Je récupère l'élément HTML pour afficher les articles dans le panier
   const cart__items = document.getElementById("cart__items");
   // Si l'élément existe, met à jour le contenu en ajoutant les éléments pour chaque produit dans le panier
   if (cart__items) {
     cart__items.innerText = "";
-    //Pour chaque éléments
+
+    //J'AJOUTE CHAUQE PRODUIT SUR LA PAGE AVEC LE DOM
     elements.forEach((element) => {
       //Ajout de l'élément dans le panier
       cart__items.appendChild(element);
     });
   }
 }
+
+//JE METS A JOUR MON PANIER
 // Appelle la fonction pour mettre à jour l'affichage initial du panier
 updateDisplayCart();
 
+
+//JE CREE UNE FONCTION POUR SUPPRIMER UN PRODUIT DU PANIER
+  /**
+   * fonction pour supprimer un article du panier, du localStorage
+  */
 // Définit une fonction pour supprimer un article du panier
 function deleteFromCart(id, color) {
   // Appelle la méthode pour supprimer un article du panier stocké dans le LocalStorage
@@ -93,7 +124,10 @@ function deleteFromCart(id, color) {
   // Appelle la fonction pour mettre à jour l'affichage du panier
   updateDisplayCart();
 }
-// Définit une fonction pour changer la quantité d'un article dans le panier
+//JE CREE UNE FONCTION POUR MODIFILIER LA QUANTITE D'UN PRODUIT DU PANIER
+  /**
+   * fonction pour changer la quantité d'un article dans le panier
+  */
 function changeQuantity(id, color, quantity) {
   console.log(id, color, +quantity);
   // Appelle la méthode pour changer la quantité d'un article dans le panier stocké dans le LocalStorage
@@ -118,7 +152,13 @@ function changeQuantity(id, color, quantity) {
  * @returns {HTMLElement}
  */
 
-//Fonction qui permet de créer facilement un élément sur le dom
+//JE CREE UNE FONCTION POUR CREER FACLIMENT UN ELEMENT SUR LE DOM
+  /**
+   * Cette fonction permet de créer facilement un élément sur le dom
+
+  * function createElement(type, classNames = "", attributes = [], ...contents)
+  */
+
 function createProductElem(product, color, quantity) {
   const article = createElement(
     "article",
@@ -166,6 +206,7 @@ function createProductElem(product, color, quantity) {
               ["min", "1"],
               ["max", "100"],
               ["value", quantity.toString()],
+              //Ici la quantité se met à jour grâce à onchange
               [
                 "onchange",
                 (ev) => changeQuantity(product._id, color, ev.target.value),
@@ -177,6 +218,7 @@ function createProductElem(product, color, quantity) {
         createElement(
           "div",
           "cart__item__content__settings__delete",
+          //Ici quand on click sur cet élément, la fonction pour supprimer le produit est appelée
           [["onclick", () => deleteFromCart(product._id, color)]],
           createElement("p", "deleteItem", [], "Supprimer")
         )
@@ -184,29 +226,44 @@ function createProductElem(product, color, quantity) {
     )
   );
   return article;
+
 }
+
+
+
+
+// PARTIE FORMULAIRE
+
+
+//GESTION DE L'OBJET CONTACT POUR LA REQUETE POST AU SERVEUR
 //Ajout de la gestion de l'objet contact pour l'envoi au serveur
 
+
 /**
- *
+ *Tous les parametres qui suivent sont regroupés dans ce tableau:
  * @param {string} type
  * @param {string} classNames
  * @param {[string, any][]} attributes
- * @param {(string| HTMLElement)[]} contents Tous les parametres qui suivent sont regroupés dans ce tableau grace au ...
+ * @param {(string| HTMLElement)[]} contents 
+ * Cette fonction permet de créer facilement un élément sur le dom
+
+ * function createElement(type, classNames = "", attributes = [], ...contents)
  */
+
+//JE CREE UNE FONCTION POUR CREER FACLIMENT UN ELEMENT SUR LE DOM
 function createElement(type, classNames = "", attributes = [], ...contents) {
 // Je crée un nouvel élément en spécifiant le type
 const element = document.createElement(type);
-// Si des classNames sont fournies, ajoute ces classes à l'élément
+// Si des classNames sont fournies, j-ajoute ces classes à l'élément
 if (classNames) {
 element.classList.add(classNames);
 }
-// Pour chaque attribut fourni, ajoute l'attribut à l'élément
+// Pour chaque attribut fourni, j'ajoute l'attribut à l'élément
 attributes.forEach((attribute) => {
 const key = attribute[0];
 const value = attribute[1];
 // Si la valeur de l'attribut est une fonction, je l'ajoute en tant que propriété de l'élément
-if (typeof value === "function") { //alt avec sa valeur pour une image
+if (typeof value === "function") {
 element[key] = value;
 } else {
 // Sinon, l'ajoute en tant qu'attribut de l'élément
@@ -214,6 +271,7 @@ element.setAttribute(key, value);
 }
 });
 
+//Ici j'ajoute simplement du texte 
   contents.forEach((content) => {
     if (typeof content === "string") {
       element.innerText = content;
@@ -224,6 +282,8 @@ element.setAttribute(key, value);
   return element;
 }
 
+
+//JE VERIFIE ICI LES CHAMPS DU FORMULAIRES AVEC DES REJEXS
 const testHasNotNumber = (value) => {
   return /^[a-zA-ZÀ-ž]+$/.test(value);
 };
@@ -236,7 +296,14 @@ const testIsEmail = (value) => {
   );
 };
 
-//Fonction pour récupérer les valeurs des champs du formulaire
+
+//ICI JE TESTE LES CHAMPS DE MES FORMULAIRES EN CREENT UN TABLEAU D'OBJET
+//POUR CHAQUE INPUT:
+//GRACE AU SELECTOR, JE RECUPERE LE CHAMPS CONCERNE AVEC LE DOM
+//POUR QUE CA SOIT DYNMAIQUE J'ECOUTE L'EVENT INPUT SUR CE CHAMPS
+//JE RECUPERE LE NOM DU CHAMPS
+//JE RECUPERE LA VALEUR DE L'INPUT
+//PUIS AVEC ERRORS, JE VERIFIE QUE LA VALEUR SAISIE EST CORRECTE
 
 /**
  * Je configure mes inputs pour tester les erreurs
@@ -313,7 +380,10 @@ const inputs = [
   },
 ];
 
+
+//APRES AVOIR FAIS CETTE CONFIGURATION J'UTILISATION UNE FONCTION POUR VERIFIER LE FORMULAIRE
 /**
+ *Fonction pour récupérer les valeurs des champs du formulaire et les vérifier
  *
  * @param {*} input
  * @param {HTMLInputElement} target
@@ -321,18 +391,23 @@ const inputs = [
 function validInput(input, target) {
   // Je récupere la valeur de l'input
   const value = target.value;
+  //ICI JE RECUPERE L'ELEMENT POUR AFFICHER LE MESSAGE D'ERREUR
   // Je récupere l'emplacement du message d'erreur en remontant sur le parent puis en redescendant sur le paragraphe
   const errorHtml = target?.parentElement?.querySelector("p");
   // J'initialise l'erreur
   let error = "";
+
+  //JE VERIFIE SI IL Y A DES ERREURS 
   // Pour chaque erreur
   input.errors.forEach((confError) => {
     // je teste si la valeur est valide suivant le test qui a été configuré
     const isGood = confError?.test(value);
     // si il n'est pas valide alors je renseigne l'erreur à afficher
+    console.log(confError)
     if (!isGood) error = confError?.errorMsg;
   });
 
+  //J'AFFICHE LE MESSAGE D'ERREUR
   // J'affiche l'erreur dans le html.
   // Si il n'ya pas eu d'erreur lors du foreach au dessus la varriable error est toujours vide.
   // Donc rien ne s'affiche
@@ -341,6 +416,8 @@ function validInput(input, target) {
   else input.error = false;
   input.value = value;
 }
+
+//iCI JE CONFIGURE TOUT POUR POUVOIR VERIFIER MES INPUTS AVEC LE CODE CI - DESSUS
 /** J'itere sur mes confs au dessus et j'implemente le code pour faire fonctionner les confs */
 inputs.forEach((input) => {
   const inputHTML = /**@type {HTMLInputElement}*/ (
@@ -355,6 +432,14 @@ inputs.forEach((input) => {
   });
 });
 
+//CETTE FONCTION 
+/**
+ * Cette fonction permet de valider le formulaire
+ * Si le formulaire est valide et le panier aussi, cette fonction vous redirige vers la page confirmation
+ * Et envoi une requête POST avec un objet contact avec toutes les données du formualires et un tableau d'id des produtis présent dans la commande
+ * Après la commande validée, le localStorage est nettoyé et le panier est vide
+ * Si le formulaire ou le panier n'est pas valide, une alert se lancera
+ */
 async function validateForm() {
   const isFormValid = inputs.every((conf) => !conf.error);
   // Si mon panier n'est pas vide, l'envoi du formulaire et la redirection peut se faire
@@ -384,6 +469,7 @@ async function validateForm() {
   } else if (cart.cart.length == 0) return alert ("Panier vide");    
 }
 
+//JE CREE UN BOUTON POUR APPELER LA FONCTION QUI VERIFIE QUE LA COMMANDE EST VALIDE
 // Associe la fonction validateForm() à l'événement "click" du bouton avec l'id "order"
 let order;
 order = document.getElementById("order");

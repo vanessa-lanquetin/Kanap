@@ -1,21 +1,28 @@
-//Je crée un nouvel objet URLSearchParams qui va stocker la chaîne de requête de l'URL.
-//La chaîne de requête est la partie se trouve après le "?"
+//PAGE PRODUCT
+
+//JE CONFIGURE L'URL EN METTANT EN PARAMETRE DE MON URL, L'ID DE MON PRODUIT POUR POUVOIR QUE MA PAGE s'AFFICHE DYNAMIQUEMENT 
+//Je crée un nouvel objet URLSearchParams qui va stocker la chaîne de requête de l'URL. La chaîne de requête est la partie qui se trouve après le "?"
 const urlParams = new URLSearchParams(window.location.search);
-//Je récupère la valeur de l'id dans la chaîne de requête de l'URL.
+//Je récupère la valeur de l'id dans la chaîne de requête de l'URL. 
 //Cette partie "|| ''" permet de retourner une chaine vide si la méthode "get" ne trouve pas l'id.
 const id = urlParams.get("id") || "";
-//Ici je récupère les éléments dont j'ai besoins avec leurs id et les affectent à des variables
+
+//JE RECUPERE LES ELEMENTS QUI DEVRONT AFFICHIER LES INFORMATIONS DE MON PRODUIT
 //Le commentaire /** @type {HTMLElement}*/ est utilisé pour indiquer au compilateur que cette variable est de type HTMLElement.
 const titre = /** @type {HTMLElement}*/ (document.getElementById("title"));
 const price = /** @type {HTMLElement}*/ (document.getElementById("price"));
-const description = /** @type {HTMLElement}*/ (
-  document.getElementById("description")
-);
+const description = /** @type {HTMLElement}*/ (document.getElementById("description"));
 const couleurs = /** @type {HTMLElement}*/ (document.getElementById("colors"));
 
 //J'utilise  ici l'opérateur "[]" pour sélectionner le premier élément de la liste item_img etpour l'attribuer à la variable image.
 //Cela permet de travailler avec un seul élément plutôt qu'avec tous les éléments qui ont la classe "item__img".
 const [image] = document.getElementsByClassName("item__img");
+
+
+//ENSUITE JE RECUPERE LES INFORMATIONS DONT J'AI BESOIN SUR MON PRODUIT ET LES AJOUTE SUR MA PAGE AVEC LE DOM
+  /**
+   * Cette fonction récupère les détails de mon produit en utilisant l'API (http://localhost:3000/api/products/${id}) avec GET
+  */
 function getData() {
   //Ici j'utilise la méthode "fetch" pour récupérer les données d'un produit à partir de l'URL avec l'ID du produit
   fetch(`http://localhost:3000/api/products/${id}`).then((res) =>
@@ -60,6 +67,11 @@ function createElem(ele) {
 //J'appelle la fonction getData
 getData();
 
+
+//JE RECUPERE LA QUANTITE ET LA COULEUR CHOISIE PAR L'UTILISATEUR 
+  /**
+   * Cette fonction récupère la couleur choisie par l'utilisateur
+  */
 const getColorProductElement = () =>
   // Ici je récupère l'élément "colors", je l'assigne à getColorProductElement
   /**@type {HTMLInputElement}*/ (document.getElementById("colors"));
@@ -67,6 +79,10 @@ const getColorProductElement = () =>
 // Utilisation de la notation "?" pour éviter une erreur si l'élément HTML n'existe pas
 const getColorProduct = () => getColorProductElement()?.value; // "?" si getColorProductElement renvoie null alors ne vas pas rechercher .value
 
+
+  /**
+   * Cette fonction récupère la quantité choisie par l'utilisateur
+  */
 const getQuantityElement = () =>
   // Je récupère l'élément ayant l'id "quantity"
   /**@type {HTMLInputElement}*/ (document.getElementById("quantity"));
@@ -75,19 +91,30 @@ const getQuantityElement = () =>
 // Utilisation de la notation "?" pour éviter une erreur si l'élément HTML n'existe pas
 let getQuantity = () => +getQuantityElement()?.value; //+ est un un raccourci pour transformer une valeur en nombre
 
+//JE RECUPERE LE BOUTON AJOUTER AU PANIER
 // Je récupère le bouton d'ajout au panier ayant l'id "addToCart"
 const addCart = document.getElementById("addToCart");
-// @ts-ignore vs code pense que cart est chargé dans  des fichiers séparés
-//Je crée d'une nouvelle instance de la classe Cart
+
+
+
+//JE CREE UNE NOUVELLE INSTANCE DE CART
+
+// @ts-ignore vs code pense que cart est chargé dans des fichiers séparés
+//Une classe est un modèle ou un plan pour créer des objets avec des caractéristiques et des comportements spécifiques. 
+//Les instances sont des versions concrètes de ces objets, avec des valeurs spécifiques .
 const cart = new Cart();
 
+
+//J'INITALISE LA QUANTITE A 0 LORS DU CHANGEMENT DE COULEURS 
 //Ici j'écoute l'évenement change sur couleurs, pour que la quantité se remette à 0 quand la couleur change
 // Lorsque la valeur de l'input est modifiée, la valeur de l'input ayant l'id "quantity" est remise à 0
 couleurs.addEventListener("change", function () {
   getQuantityElement().value = "0";
 });
-// Si le bouton d'ajout au panier existe
 
+
+//AU CLICK DU BOUTON, J'AJOTUE MON PRODUIT AU PANIER AVEC SON ID, SA COULEUR, SA QUANTITE
+// Si le bouton d'ajout au panier existe
 if (addCart) {
   // Lorsque le bouton est cliqué, la fonction "addProduct" de l'objet cart est appelée avec les valeurs de couleur et de quantité
   addCart.addEventListener("click", function () {
